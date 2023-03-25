@@ -11,6 +11,7 @@ import CoreData
 class CoreDataViewModel: ObservableObject {
     
     let container: NSPersistentContainer
+    @Published var savedEntites: [FruitEntity] = []
     
     init()
     {
@@ -22,6 +23,34 @@ class CoreDataViewModel: ObservableObject {
             }
              
         }
+        fetchFruits()
+    }
+    
+    func fetchFruits() {
+        let request = NSFetchRequest<FruitEntity>(entityName: "FruitEntity")
+        
+        do {
+            savedEntites = try container.viewContext.fetch(request)
+        } catch let error {
+            print("Error fetching. \(error)")
+        }
+    }
+    
+    func addFruit(text: String) {
+        let newFruit = FruitEntity(context: container.viewContext)
+        newFruit.name = text
+        saveData()
+    }
+    
+    func saveData() {
+        do {
+            try container.viewContext.save()
+            // 뷰 관찰을 위해 가져오기 설정
+            fetchFruits()
+        } catch let error {
+            print("Error saving. \(error)")
+        }
+        
     }
 }
 
