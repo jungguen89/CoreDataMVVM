@@ -57,17 +57,42 @@ class CoreDataViewModel: ObservableObject {
 struct ContentView: View {
     
     @StateObject var vm = CoreDataViewModel()
-    
+    @State var textFieldText: String = ""
     
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
-            Text("This is for the github")
+        NavigationView {
+            VStack(spacing: 20) {
+                TextField("Add fruit here....", text:$textFieldText )
+                    .font(.headline)
+                    .padding(.leading)
+                    .frame(height: 55)
+                    .background(Color.red.opacity(0.33))
+                    .cornerRadius(10)
+                
+                Button( action: {
+                    guard !textFieldText.isEmpty else { return }
+                    vm.addFruit(text: textFieldText)
+                    textFieldText = ""
+                }, label: {
+                    Text("Button")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(height: 55)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.red.opacity(0.33))
+                        .cornerRadius(10)
+                        
+                })
+                
+                List {
+                    ForEach(vm.savedEntites) { entity in
+                        Text(entity.name ?? "No Name")
+                    }
+                }
+            }
+            .padding(.horizontal)
+            .navigationTitle("Fruits")
         }
-        .padding()
     }
 }
 
