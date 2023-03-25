@@ -6,8 +6,30 @@
 //
 
 import SwiftUI
+import CoreData
+
+class CoreDataViewModel: ObservableObject {
+    
+    let container: NSPersistentContainer
+    
+    init()
+    {
+        container = NSPersistentContainer(name: "FruitsContainer")
+        // coredata 호출
+        container.loadPersistentStores { (description, error) in
+            if let error = error {
+                print("ERROR LOADING CORE DATA. \(error)")
+            }
+             
+        }
+    }
+}
 
 struct ContentView: View {
+    
+    @StateObject var vm = CoreDataViewModel()
+    
+    
     var body: some View {
         VStack {
             Image(systemName: "globe")
