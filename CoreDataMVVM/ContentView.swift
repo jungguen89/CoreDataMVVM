@@ -8,6 +8,9 @@
 import SwiftUI
 import CoreData
 
+
+// ViewModel
+
 class CoreDataViewModel: ObservableObject {
     
     let container: NSPersistentContainer
@@ -50,10 +53,24 @@ class CoreDataViewModel: ObservableObject {
         } catch let error {
             print("Error saving. \(error)")
         }
-        
+    }
+    func deleteFruit(indexSet: IndexSet) {
+        guard let index = indexSet.first else {return}
+        let entity = savedEntites[index]
+        container.viewContext.delete(entity)
+        saveData()
+    }
+    
+    func updateFruit(entity: FruitEntity) {
+        let currentName = entity.name ?? ""
+        let newName = currentName + "😡"
+        entity.name = newName
+        saveData()
     }
 }
 
+
+// View
 struct ContentView: View {
     
     @StateObject var vm = CoreDataViewModel()
@@ -87,8 +104,13 @@ struct ContentView: View {
                 List {
                     ForEach(vm.savedEntites) { entity in
                         Text(entity.name ?? "No Name")
+                            .onTapGesture {
+                                vm.updateFruit(entity: entity)
+                            }
                     }
+                    .onDelete(perform: vm.deleteFruit)
                 }
+                .listStyle(PlainListStyle())
             }
             .padding(.horizontal)
             .navigationTitle("Fruits")
